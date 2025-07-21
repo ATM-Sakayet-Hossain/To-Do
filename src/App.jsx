@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { getDatabase, push, ref, set } from "firebase/database";
+import React, { useEffect, useState } from 'react';
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
 import { database } from '../dbConfig.js'
 
 
 function App() {
   const [itemName, setItemName] = useState('');
+  const [itemList, setItemList] = useState([]);
   const db = getDatabase();
 
 const handelsubmit = (e) => {
@@ -16,10 +17,20 @@ const handelsubmit = (e) => {
   set(push(ref(db, 'toDoList/')), {
     itemName: itemName,
   });
-  console.log("Item submitted:", itemName);
   setItemName(''); // Clear the input field after submission
 }
-  
+useEffect(()=>{
+onValue(ref(db, 'toDoList'), (snapshot) => {
+  let data = [];
+  snapshot.forEach((item) => {
+    data.push({...item.val(), id: item.key });    
+  })
+  setItemList(data)
+});
+},[])
+
+console.log(itemList);
+
   return (
     <>
       <form>
@@ -29,6 +40,15 @@ const handelsubmit = (e) => {
           <input onChange={(e)=> setItemName(e.target.value)} type="text" name="itemName" id="itemName" />
           <button onClick={handelsubmit}>submit</button>
         </div>
+        <div>
+          <h2>Item Name:</h2>
+          {itemList.map((item) => (
+            <ul key={item.id}>
+              <li>{item.itemName}</li>
+            </ul>
+          ))}
+        </div>
+        
       </form>
     </>
   )
