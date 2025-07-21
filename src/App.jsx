@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { database } from '../dbConfig.js'
+import { MdDelete } from 'react-icons/md';
 
 
 function App() {
@@ -11,13 +12,16 @@ function App() {
 const handelsubmit = (e) => {
   e.preventDefault();
   if (!itemName) {
-    alert("Please enter an item name");
+    alert("Please input item name");
     return;
   }
   set(push(ref(db, 'toDoList/')), {
     itemName: itemName,
   });
-  setItemName(''); // Clear the input field after submission
+  setItemName('');
+}
+const handeldelete = (item) => {
+  remove(ref(db, 'toDoList/' + item.id))
 }
 useEffect(()=>{
 onValue(ref(db, 'toDoList'), (snapshot) => {
@@ -29,7 +33,7 @@ onValue(ref(db, 'toDoList'), (snapshot) => {
 });
 },[])
 
-console.log(itemList);
+
 
   return (
     <>
@@ -45,6 +49,7 @@ console.log(itemList);
           {itemList.map((item) => (
             <ul key={item.id}>
               <li>{item.itemName}</li>
+              <button onClick={() => handeldelete(item)}><MdDelete /></button>
             </ul>
           ))}
         </div>
