@@ -18,8 +18,9 @@ const handelsubmit = (e) => {
   set(push(ref(db, 'toDoList/')), {
     itemName: itemName,
   });
-  setItemName('');
+  setItemName("");
 }
+
 const handeldelete = (item) => {
   remove(ref(db, 'toDoList/' + item.id))
 }
@@ -41,7 +42,7 @@ onValue(ref(db, 'toDoList'), (snapshot) => {
         <h1>Welcome to To-Do App</h1>
         <div>
           <label>Item Name</label>
-          <input onChange={(e)=> setItemName(e.target.value)} type="text" name="itemName" id="itemName" />
+          <input value={itemName} onChange={(e)=> setItemName(e.target.value)} type="text" name="itemName" id="itemName" />
           <button onClick={handelsubmit}>submit</button>
         </div>
         <div>
